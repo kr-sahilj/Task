@@ -1,0 +1,215 @@
+<html>
+
+<head>
+    <title>Connect to crypto wallet</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .my_bg {
+            background-image:
+                linear-gradient(45deg,
+                    rgba(245, 70, 66, 0.75),
+                    rgba(8, 83, 156, 0.75));
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        /* To connect using MetaMask */
+        // const walletAddress;
+        let walletAddress;
+        async function connect() {
+            if (window.ethereum) {
+                await window.ethereum.request({ method: "eth_requestAccounts" });
+                window.web3 = new Web3(window.ethereum);
+                const account = web3.eth.accounts;
+                //Get the current MetaMask selected/active wallet
+                walletAddress = account.givenProvider.selectedAddress;
+                console.log(`Wallet: ${walletAddress}`);
+
+            } else {
+                console.log("No wallet");
+            }
+        }
+
+
+        async function request() {
+            // const Web3 = require('web3')
+            // const web3 = new Web3('https://goerli.infura.io/v3/abe3751076cc41e4b667f40d4430dd4c')
+            console.log(walletAddress);
+            const contractAddress = '0x91B7D7F5EEfe77583EB38F25c3591961998EF09d';
+            const contractABI = [
+                {
+                    inputs: [
+                        {
+                            internalType: "address",
+                            name: "tokenAddress",
+                            type: "address",
+                        },
+                    ],
+                    stateMutability: "payable",
+                    type: "constructor",
+                },
+                {
+                    anonymous: false,
+                    inputs: [
+                        {
+                            indexed: true,
+                            internalType: "address",
+                            name: "from",
+                            type: "address",
+                        },
+                        {
+                            indexed: true,
+                            internalType: "uint256",
+                            name: "amount",
+                            type: "uint256",
+                        },
+                    ],
+                    name: "Deposit",
+                    type: "event",
+                },
+                {
+                    anonymous: false,
+                    inputs: [
+                        {
+                            indexed: true,
+                            internalType: "address",
+                            name: "to",
+                            type: "address",
+                        },
+                        {
+                            indexed: true,
+                            internalType: "uint256",
+                            name: "amount",
+                            type: "uint256",
+                        },
+                    ],
+                    name: "Withdrawal",
+                    type: "event",
+                },
+                {
+                    inputs: [],
+                    name: "getBalance",
+                    outputs: [
+                        {
+                            internalType: "uint256",
+                            name: "",
+                            type: "uint256",
+                        },
+                    ],
+                    stateMutability: "view",
+                    type: "function",
+                },
+                {
+                    inputs: [],
+                    name: "lockTime",
+                    outputs: [
+                        {
+                            internalType: "uint256",
+                            name: "",
+                            type: "uint256",
+                        },
+                    ],
+                    stateMutability: "view",
+                    type: "function",
+                },
+                {
+                    inputs: [],
+                    name: "requestTokens",
+                    outputs: [],
+                    stateMutability: "nonpayable",
+                    type: "function",
+                },
+                {
+                    inputs: [
+                        {
+                            internalType: "uint256",
+                            name: "amount",
+                            type: "uint256",
+                        },
+                    ],
+                    name: "setLockTime",
+                    outputs: [],
+                    stateMutability: "nonpayable",
+                    type: "function",
+                },
+                {
+                    inputs: [
+                        {
+                            internalType: "uint256",
+                            name: "amount",
+                            type: "uint256",
+                        },
+                    ],
+                    name: "setWithdrawalAmount",
+                    outputs: [],
+                    stateMutability: "nonpayable",
+                    type: "function",
+                },
+                {
+                    inputs: [],
+                    name: "token",
+                    outputs: [
+                        {
+                            internalType: "contract IERC20",
+                            name: "",
+                            type: "address",
+                        },
+                    ],
+                    stateMutability: "view",
+                    type: "function",
+                },
+                {
+                    inputs: [],
+                    name: "withdraw",
+                    outputs: [],
+                    stateMutability: "nonpayable",
+                    type: "function",
+                },
+                {
+                    inputs: [],
+                    name: "withdrawalAmount",
+                    outputs: [
+                        {
+                            internalType: "uint256",
+                            name: "",
+                            type: "uint256",
+                        },
+                    ],
+                    stateMutability: "view",
+                    type: "function",
+                },
+                {
+                    stateMutability: "payable",
+                    type: "receive",
+                },
+            ];
+
+            var tokenContract = new web3.eth.Contract(contractABI, contractAddress);
+            console.log(tokenContract);
+            tokenContract.methods.requestTokens().call((err, result) => {
+                console.log(result);
+                // console.log(err)
+            })
+        }
+
+
+    </script>
+    <div class="my_bg">
+        <h1 align="center"> SneTo Faucet</h1>
+        <input type="button" value="Connect Wallet" onclick="connect();">
+        <input type="button" value="Request 10 SNT" onclick="request();">
+    </div>
+</body>
+
+</html>
