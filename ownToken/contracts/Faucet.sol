@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-interface IERC20{
+interface ERC20{
     //use to talk to other contract
     function transfer(address to, uint256 amount) external returns(bool);
     function balanceOf(address account) external view returns(uint256);
@@ -11,39 +11,75 @@ interface IERC20{
 }
 contract Faucet {
     address payable owner;
-    IERC20 public token;
+    ERC20 public token;
 
     uint256 public withDrawlAmount; 
     uint256 public lockTime;
+    uint256 public maxlimit;
 
 
     event WithDrawl(address indexed to, uint256 indexed amount);
     event Deposit(address indexed from, uint256 indexed amount);
 
     mapping(address => uint256) nextAccessTime;
+    mapping(address => uint256) totalToken;
 
     constructor(address tokenAddress) payable{
-        token = IERC20(tokenAddress);
+        token = ERC20(tokenAddress);
         owner = payable(msg.sender);
-        withDrawlAmount =10 * (10**18);
-        lockTime = 1 minutes;
+        withDrawlAmount =100 * (10**18);
+        lockTime = 5 minutes;
+        maxlimit = 500*(10**18);
 
     }
 
     function requestTokens() public {
-        
-        require(token.balanceOf(address(this)) >= withDrawlAmount , "Insufficient balance in faucet");
-        require(block.timestamp >= nextAccessTime[msg.sender], "Wait for 24 hours after last withdrawl");
 
-        nextAccessTime[msg.sender] = block.timestamp + lockTime;
-
-        token.transfer(msg.sender,withDrawlAmount);
         
+        if(totalToken[msg.sender]!=0)
+        {
+            //old user
+            if(totalToken[msg.sender]==maxlimit)
+            {
+                if( block.timestamp > nextAccessTime[msg.sender]+lockTime)
+                {
+                    totalToken[msg.sender]=0;
+                    nextAccessTime[msg.sender]=block.timestamp;
+                }
+                else{
+                    require(totalToken[msg.sender] > maxlimit,"today's maximum limit reached");
+                }
+                
+            }
+            // require(totalToken[msg.sender] > maxlimit,"today's maximum limit reached");
+            // if time ends but maximum token limit still left
+            if(nextAccessTime[msg.sender]+lockTime <= block.timestamp)
+            {
+                totalToken[msg.sender]=0;
+                token.transfer(msg.sender,withDrawlAmount);
+                totalToken[msg.sender]+=withDrawlAmount;
+                nextAccessTime[msg.sender]=block.timestamp;
+                
+            }
+            else
+            {
+                token.transfer(msg.sender,withDrawlAmount);
+                totalToken[msg.sender]+=withDrawlAmount;
+            }
+            
+        }
+        else{
+            //new user
+            token.transfer(msg.sender,withDrawlAmount);
+            nextAccessTime[msg.sender]=block.timestamp;
+            totalToken[msg.sender]+=withDrawlAmount;
+
+        }
     }
 
-    receive() external payable {
-        emit Deposit(msg.sender, msg.value);
-    }
+    // receive() external payable {
+    //     emit Deposit(msg.sender, msg.value);
+    // }
 
     function getBalance() external view returns(uint256) {
         return token.balanceOf(address(this));
