@@ -1,156 +1,153 @@
 import {ethers } from "ethers"
 
-const faucetAbi = [
+const faucetAbi =[
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: "address",
-          name: "tokenAddress",
-          type: "address",
-        },
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        }
       ],
-      stateMutability: "payable",
-      type: "constructor",
+      "stateMutability": "payable",
+      "type": "constructor"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: true,
-          internalType: "address",
-          name: "from",
-          type: "address",
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
         },
         {
-          indexed: true,
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
       ],
-      name: "Deposit",
-      type: "event",
+      "name": "Deposit",
+      "type": "event"
     },
     {
-      anonymous: false,
-      inputs: [
+      "anonymous": false,
+      "inputs": [
         {
-          indexed: true,
-          internalType: "address",
-          name: "to",
-          type: "address",
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
         },
         {
-          indexed: true,
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
       ],
-      name: "Withdrawal",
-      type: "event",
+      "name": "WithDrawl",
+      "type": "event"
     },
     {
-      inputs: [],
-      name: "getBalance",
-      outputs: [
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
         {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: "view",
-      type: "function",
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: "lockTime",
-      outputs: [
+      "inputs": [],
+      "name": "lockTime",
+      "outputs": [
         {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: "view",
-      type: "function",
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: "requestTokens",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
+      "inputs": [],
+      "name": "maxlimit",
+      "outputs": [
         {
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      name: "setLockTime",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [],
+      "name": "requestTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
         {
-          internalType: "uint256",
-          name: "amount",
-          type: "uint256",
-        },
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
       ],
-      name: "setWithdrawalAmount",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
+      "name": "setLockTime",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: "token",
-      outputs: [
+      "inputs": [],
+      "name": "token",
+      "outputs": [
         {
-          internalType: "contract IERC20",
-          name: "",
-          type: "address",
-        },
+          "internalType": "contract ERC20",
+          "name": "",
+          "type": "address"
+        }
       ],
-      stateMutability: "view",
-      type: "function",
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: "withdraw",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
+      "inputs": [],
+      "name": "withDrawl",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [],
-      name: "withdrawalAmount",
-      outputs: [
+      "inputs": [],
+      "name": "withDrawlAmount",
+      "outputs": [
         {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      stateMutability: "payable",
-      type: "receive",
-    },
+      "stateMutability": "view",
+      "type": "function"
+    }
   ];
+
 
 const faucetContract = (provider) => {
     return new ethers.Contract(
-        "0xa7035E6ac9a36d88756548cC381A00B3676526a1",
+        "0xC286f623aF95838c78Acc31BFDec96A49e1fF562",
         faucetAbi,
         provider
     );
