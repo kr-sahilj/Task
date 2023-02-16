@@ -6,11 +6,14 @@ import faucetContract from "./ethereum/faucet";
 
 
 function App() {
+  const [message, setMessage] = useState('');
   const [walletAddress, setWalletAddress] = useState("");
   const [signer, setSigner] = useState();
   const [fcContract, setFcContract] = useState();
   const [withdrawError, setWithdrawError] = useState("");
   const [withdrawSuccess, setWithdrawSuccess] = useState("");
+  const [isLoading, setLoading] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("");
 
   useEffect(() => {
     getCurrentWalletConnected();
@@ -91,20 +94,35 @@ function App() {
     }
   };
 
-  const getSneTo = async() => {<p className="panel-heading"></p>
+  const getSneTo = async () => {
+    <p className="panel-heading"></p>
     setWithdrawError("");
     setWithdrawSuccess("");
-    try{
+    
+    
+    try {
       const fcContractWithSigner = fcContract.connect(signer);
-      const response = await fcContractWithSigner.requestTokens();
+      const response = await fcContractWithSigner.requestTokens(message);
       console.log(response);
-      setWithdrawSuccess("Success");
+      setTransactionHash(response.hash);
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      },10000)
+      setWithdrawSuccess("success");
 
     }
-    catch(err){
+    catch (err) {
       console.log(err.message);
-      setWithdrawError(err.message);
+      setWithdrawError("This exceed the daily maximum limit");
     }
+  };
+
+
+  const handleChange = (event) => {
+    // 👇 Get input value from "event"
+    // console.log(event.target.value);
+    setMessage(event.target.value);
   };
 
   return (
@@ -136,13 +154,11 @@ function App() {
       <section className="hero is-fullheight">
         <div className="faucet-hero-body">
           <div className="container has-text-centered main-content">
-            <div className = "mt-5">
+            <div className="mt-5">
               {withdrawError && (
                 <div className="withdraw-error">{withdrawError}</div>
               )}
-              {withdrawSuccess && (
-                <div className="withdraw-success">{withdrawSuccess}</div>
-              )}{" "}
+              
             </div>
             <div className="box address-box">
               <div className="columns">
@@ -154,21 +170,52 @@ function App() {
                     defaultValue={walletAddress}
                   />
                 </div>
-                <div className="column">
+
+
+
+
+              </div>
+              <div className="columns">
+                <div className="column is-four-fifths">
+                  <input
+                    className="input is-medium"
+                    type="text"
+                    placeholder="Amount"
+                    onChange={handleChange}
+                  />
+
+                </div>
+
+              </div>
+              <div className="column">
+                {isLoading ? "" :
                   <button className="button is-link is-medium" onClick={getSneTo}>
                     GET TOKENS
                   </button>
-                </div>
-              </div>
-              <article className="panel is-grey-darker">
-                
-                
-              </article>
+                }
+                {isLoading ? <div><h4>Ongoing transaction..</h4>
+                  <img style={{ width: "200px", height: "200px" }} src="img/loader.gif" /> </div>: <div>
+                  {withdrawSuccess && (
+                <div className="withdraw-success">{withdrawSuccess}</div>
+              )}{" "}
+            
+                </div> 
+                }
+              {/* </div> */}
+
             </div>
+            
+            <article className="panel is-grey-darker">
+            {transactionHash && (
+                <div className="withdraw-success">{transactionHash}</div>
+              )}{" "}
+
+            </article>
           </div>
         </div>
-      </section>
     </div>
+      </section >
+    </div >
   );
 }
 
