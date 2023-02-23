@@ -7,7 +7,7 @@ contract KnackNFT {
     string public name;
     string public symbol;
     uint private count;
-    uint public amount;
+    uint256 public amount;
     mapping(uint256 => address) nftOwners;
     mapping(address => uint256) nftBalance;
     // Mapping from token ID to approved address
@@ -63,8 +63,13 @@ contract KnackNFT {
     function sendETH(address payable receiver) public payable {
 		require(msg.sender.balance >= msg.value, "You don't have enough funds"); // require that the sender has enough ether to send
         // uint require
-		bool success = receiver.send(msg.value); 
+        require(msg.value>=amount,"Enough ETH not send");
+
+		bool success = receiver.send(amount); 
 		require(success, "Transfer failed");
+        if(msg.value>amount){
+            payable(msg.sender).transfer(msg.value-amount);
+        }
 	}
 
 
